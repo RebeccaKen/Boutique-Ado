@@ -16,14 +16,6 @@ class StripeWH_Handler:
     def __init__(self, request):
         self.request = request
 
-    def handle_event(self, event):
-        """
-        Handle a generic/unknown/unexpected webhook event
-        """
-        return HttpResponse(
-            content=f'Unhandled webhook received: {event["type"]}',
-            status=200)
-
     def _send_confirmation_email(self, order):
         """Send the user a confirmation email"""
         cust_email = order.email
@@ -41,6 +33,14 @@ class StripeWH_Handler:
             [cust_email]
         )        
 
+    def handle_event(self, event):
+        """
+        Handle a generic/unknown/unexpected webhook event
+        """
+        return HttpResponse(
+            content=f'Unhandled webhook received: {event["type"]}',
+            status=200)
+
     def handle_payment_intent_succeeded(self, event):
         """
         Handle the payment_intent.succeeded webhook from Stripe
@@ -50,21 +50,15 @@ class StripeWH_Handler:
         bag = intent.metadata.bag
         save_info = intent.metadata.save_info
 
-        # Get the Charge object
-        stripe_charge = stripe.Charge.retrieve(
-        intent.latest_charge
-        )
-
-        billing_details = stripe_charge.billing_details # updated
+        billing_details = intent.charges.data[0].billing_details
         shipping_details = intent.shipping
-        grand_total = round(stripe_charge.amount / 100, 2) # updated
- 
+        grand_total = round(intent.charges.data[0].amount / 100, 2)
+
         # Clean data in the shipping details
         for field, value in shipping_details.address.items():
             if value == "":
                 shipping_details.address[field] = None
 
-        
         # Update profile information if save_info was checked
         profile = None
         username = intent.metadata.username
@@ -113,6 +107,7 @@ class StripeWH_Handler:
             try:
                 order = Order.objects.create(
                     full_name=shipping_details.name,
+                    user_profile=profile,
                     email=billing_details.email,
                     phone_number=shipping_details.phone,
                     country=shipping_details.address.country,
