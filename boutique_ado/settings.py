@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'DEVELOPMENT' in os.environ
+DEBUG = False
 
 ALLOWED_HOSTS = ['boutique-ado-e-commerce.herokuapp.com', 'localhost']
 
@@ -108,8 +108,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -215,8 +213,18 @@ if 'USE_AWS' in os.environ:
 FREE_DELIVERY_THRESHOLD = 50
 STANDARD_DELIVERY_PERCENTAGE = 10
 STRIPE_CURRENCY = 'usd'
-STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
-STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET', '')
-DEFAULT_FROM_EMAIL = 'boutiqueado@example.com'
+STRIPE_PUBLIC_KEY = os.getenv('pk_test_51N8XEQE7l6GKou9fC8QJwUZ832LVhYUT068ohkmNCTtxHM6S1Ui9UCkh6zuh22wIAbQ6YSMLWf9EKp6MCKHc1jYl00HHfTBrw4', '')
+STRIPE_SECRET_KEY = os.getenv('sk_test_51N8XEQE7l6GKou9fDHuwmWysSDpSXh6H4c1TDAOXXpT4B6eDS82TGMK0eNJJ34OVf9whtRNgG8LuiE6AOdnIRG8t002nM51OTR', '')
+STRIPE_WH_SECRET = os.getenv('whsec_Bj7R5TAUVJYvHmTzeBAWsojFxQrYCfP1', '')
 
+if 'DEVELOPMENT' in os.environ:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'boutiqueado@example.com'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASS')
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
