@@ -20,16 +20,19 @@ if os.path.exists("env.py"):
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+DEFAULT_AUTO_FIELD='django.db.models.BigAutoField'
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['boutique-ado-e-commerce.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['boutique-ado-e-commerce.herokuapp.com', 'localhost', '8000-rebeccaken-boutiqueado-vhlgb6fr95i.ws-eu98.gitpod.io']
 
 
 # Application definition
